@@ -1,5 +1,6 @@
 "use client"
 
+import { useSession } from "next-auth/react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +15,7 @@ import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function TwoFactorAuth() {
+  const { data: session } = useSession()
   const [code, setCode] = useState(["", "", "", "", "", ""])
   const [error, setError] = useState("")
   const [countdown, setCountdown] = useState(0)
@@ -48,7 +50,7 @@ export default function TwoFactorAuth() {
       const response = await fetch('/api/users/verify-2fa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'user_id_here', code: fullCode })
+        body: JSON.stringify({ userId: session?.user?.id, code: fullCode })
       })
 
       const data = await response.json()
@@ -71,7 +73,7 @@ export default function TwoFactorAuth() {
       const response = await fetch('/api/users/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'user_id_here' })
+        body: JSON.stringify({ userId: session?.user?.id })
       })
 
       const data = await response.json()
